@@ -15,3 +15,14 @@ type ParseResult struct {
 func NilParser(*goquery.Document) ParseResult {
 	return ParseResult{}
 }
+
+type Scheduler interface {
+	ReadyNotifier
+	Submit(Request)
+	WorkerChannel() chan Request
+	Run()
+}
+
+type ReadyNotifier interface {
+	WorkerReady(chan Request)
+}
