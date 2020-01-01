@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"go-crawl/fetcher"
 	"log"
 )
 
@@ -17,7 +16,7 @@ func (*SimpleEngine) Run(Seeds ...Request) {
 	for len(requestQ) > 0 {
 		request := requestQ[0]
 		requestQ = requestQ[1:]
-		parseResult, err := worker(request)
+		parseResult, err := Worker(request)
 		if err != nil {
 			continue
 		}
@@ -27,18 +26,4 @@ func (*SimpleEngine) Run(Seeds ...Request) {
 			log.Printf("Got item : %v\n", item)
 		}
 	}
-}
-
-func worker(request Request) (ParseResult, error) {
-	log.Println("fetching url : ", request.Url)
-
-	//fetch
-	doc, err := fetcher.Fetch(request.Url)
-	if err != nil {
-		log.Printf("fetch url error. url %s : %v", request.Url, err)
-		return ParseResult{}, err
-	}
-
-	//parse
-	return request.ParserFunc(doc), nil
 }

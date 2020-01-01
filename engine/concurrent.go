@@ -1,10 +1,9 @@
 package engine
 
-import "log"
-
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
+	ItemChanel  chan Item
 }
 
 func (e *ConcurrentEngine) Run(Seeds ...Request) {
@@ -14,7 +13,6 @@ func (e *ConcurrentEngine) Run(Seeds ...Request) {
 	for i := 0; i < e.WorkerCount; i++ {
 		createWorker(e.Scheduler.WorkerChannel(), out, e.Scheduler)
 	}
-	count := 0
 	for _, r := range Seeds {
 		e.Scheduler.Submit(r)
 	}
@@ -23,8 +21,9 @@ func (e *ConcurrentEngine) Run(Seeds ...Request) {
 		result := <-out
 
 		for _, item := range result.Items {
-			count++
-			log.Printf("Got item : #%d : %v\n", count, item)
+			go func(i Item) {
+				e.ItemChanel <- i
+			}(item)
 		}
 
 		for _, request := range result.Requests {
@@ -39,7 +38,7 @@ func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
 		for {
 			ready.WorkerReady(in)
 			request := <-in
-			result, err := worker(request)
+			result, err := Worker(request)
 			if err != nil {
 				continue
 			}

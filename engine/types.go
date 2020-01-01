@@ -9,11 +9,18 @@ type Request struct {
 
 type ParseResult struct {
 	Requests []Request
-	Items    []interface{}
+	Items    []Item
 }
 
 func NilParser(*goquery.Document) ParseResult {
 	return ParseResult{}
+}
+
+type Item struct {
+	Url     string
+	Type    string
+	Id      string
+	Payload interface{}
 }
 
 type Scheduler interface {
