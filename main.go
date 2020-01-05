@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go-crawl/distributed/config"
 	"go-crawl/engine"
 	"go-crawl/persist"
 	"go-crawl/scheduler"
@@ -13,13 +14,14 @@ func main() {
 		panic(err)
 	}
 	e := &engine.ConcurrentEngine{
-		Scheduler:   &scheduler.QueuedScheduler{},
-		WorkerCount: 20,
-		ItemChanel:  itemChannel,
+		Scheduler:        &scheduler.QueuedScheduler{},
+		WorkerCount:      20,
+		ItemChanel:       itemChannel,
+		RequestProcessor: engine.Worker,
 	}
 	e.Run(engine.Request{
-		Url:        "http://www.zhenai.com/zhenghun",
-		ParserFunc: parser.ParseCityList,
+		Url:    "http://www.zhenai.com/zhenghun",
+		Parser: engine.NewFuncParser(parser.ParseCityList, config.ParseCityList),
 	})
 
 }

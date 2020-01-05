@@ -1,7 +1,6 @@
 package rpcsupport
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/rpc"
@@ -30,7 +29,6 @@ func NewRpcClient(host string) (*rpc.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("")
 	client := jsonrpc.NewClient(conn)
 	return client, err
 }

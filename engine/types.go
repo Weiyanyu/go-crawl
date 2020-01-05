@@ -2,9 +2,16 @@ package engine
 
 import "github.com/PuerkitoBio/goquery"
 
+type ParserFunc func(*goquery.Document) ParseResult
+
+type Parser interface {
+	Parse(*goquery.Document) ParseResult
+	Serialize() (name string, args interface{})
+}
+
 type Request struct {
-	Url        string
-	ParserFunc func(*goquery.Document) ParseResult
+	Url    string
+	Parser Parser
 }
 
 type ParseResult struct {
@@ -12,8 +19,38 @@ type ParseResult struct {
 	Items    []Item
 }
 
-func NilParser(*goquery.Document) ParseResult {
+//NilParser
+type NilParser struct {
+}
+
+func (NilParser) Parse(d *goquery.Document) ParseResult {
 	return ParseResult{}
+}
+
+func (NilParser) Serialize() (name string, args interface{}) {
+	return "Nil", nil
+}
+
+//Function Parser
+type FuncParser struct {
+	parser ParserFunc
+	name   string
+}
+
+func (f *FuncParser) Parse(d *goquery.Document) ParseResult {
+	return f.parser(d)
+}
+
+func (f *FuncParser) Serialize() (name string, args interface{}) {
+
+	return f.name, nil
+}
+
+func NewFuncParser(p ParserFunc, name string) *FuncParser {
+	return &FuncParser{
+		parser: p,
+		name:   name,
+	}
 }
 
 type Item struct {

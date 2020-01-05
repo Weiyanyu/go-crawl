@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"go-crawl/distributed/config"
 	"go-crawl/engine"
 	"go-crawl/model"
 	"regexp"
@@ -61,7 +62,7 @@ func ParseCityAndProfile(doc *goquery.Document) engine.ParseResult {
 		if !ok || s.Text() != "下一页" {
 			return
 		}
-		result.Requests = append(result.Requests, engine.Request{Url: url, ParserFunc: ParseCityAndProfile})
+		result.Requests = append(result.Requests, engine.Request{Url: url, Parser: engine.NewFuncParser(ParseCityAndProfile, config.ParseCityAndProfile)})
 	})
 	return result
 }

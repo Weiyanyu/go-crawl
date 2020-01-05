@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"go-crawl/distributed/config"
 	"go-crawl/engine"
 
 	"github.com/PuerkitoBio/goquery"
@@ -16,7 +17,7 @@ func ParseCityList(doc *goquery.Document) engine.ParseResult {
 		if !ok {
 			return
 		}
-		result.Requests = append(result.Requests, engine.Request{Url: url, ParserFunc: ParseCityAndProfile})
+		result.Requests = append(result.Requests, engine.Request{Url: url, Parser: engine.NewFuncParser(ParseCityAndProfile, config.ParseCityAndProfile)})
 	})
 	return result
 }
