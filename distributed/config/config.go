@@ -14,7 +14,14 @@ const (
 	ParseCityAndProfile = "ParseCityAndProfile"
 	ParseCityList       = "ParseCityList"
 	NilParser           = "NilParser"
+)
 
-	//worker port
-	WorkerPort0 = 9000
+var (
+	WorkerHostList = []string{
+		":9000",
+		":9001",
+		":9002",
+		":9003",
+		":9004",
+	}
 )

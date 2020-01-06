@@ -7,13 +7,13 @@ import (
 	"net/rpc/jsonrpc"
 )
 
-func ServeRpc(host string, rpcService interface{}, serverNotifier chan struct{}) error {
+func ServeRpc(host string, rpcService interface{}) error {
 	rpc.Register(rpcService)
 	listenr, err := net.Listen("tcp", host)
 	if err != nil {
 		return err
 	}
-	serverNotifier <- struct{}{}
+	log.Printf("server %s already listen", host)
 	for {
 		conn, err := listenr.Accept()
 		if err != nil {

@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"go-crawl/distributed/config"
 	"go-crawl/distributed/persist/client"
-	"go-crawl/distributed/persist/server"
+	"go-crawl/distributed/rpcsupport"
+	"log"
+	"net/rpc"
 
 	workerclient "go-crawl/distributed/worker/client"
-	workerserver "go-crawl/distributed/worker/server"
 	"go-crawl/engine"
 	"go-crawl/scheduler"
 	"go-crawl/zhenai/parser"
@@ -15,22 +16,13 @@ import (
 
 func main() {
 
-	serverNotifier := make(chan struct{})
-	go server.ServrRpc(fmt.Sprintf(":%d", config.ItemSaverPort), config.ItemSaverESIndex, serverNotifier)
-
-	<-serverNotifier
 	itemChannel, err := client.ItemSaver(fmt.Sprintf(":%d", config.ItemSaverPort), "dating_profile")
 	if err != nil {
 		panic(err)
 	}
-	go workerserver.ServeRpc(fmt.Sprintf(":%d", config.WorkerPort0), serverNotifier)
 
-	<-serverNotifier
-
-	requestProcessor, err := workerclient.CreateProcessor()
-	if err != nil {
-		panic(err)
-	}
+	pool := createProcessorPool(config.WorkerHostList)
+	requestProcessor := workerclient.CreateProcessor(pool)
 
 	e := &engine.ConcurrentEngine{
 		Scheduler:        &scheduler.QueuedScheduler{},
@@ -43,4 +35,30 @@ func main() {
 		Parser: engine.NewFuncParser(parser.ParseCityList, config.ParseCityList),
 	})
 
+}
+
+func createProcessorPool(hosts []string) chan *rpc.Client {
+
+	var clients []*rpc.Client
+	for _, host := range hosts {
+		client, err := rpcsupport.NewRpcClient(host)
+		if err != nil {
+			log.Printf("Error connection to %s : %v", host, err)
+		} else {
+			clients = append(clients, client)
+			log.Printf("Connected to %s", host)
+		}
+	}
+
+	pool := make(chan *rpc.Client)
+
+	go func() {
+		for {
+			for _, client := range clients {
+				pool <- client
+			}
+		}
+	}()
+
+	return pool
 }

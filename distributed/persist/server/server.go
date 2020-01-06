@@ -1,6 +1,8 @@
-package server
+package main
 
 import (
+	"fmt"
+	"go-crawl/distributed/config"
 	"go-crawl/distributed/persist"
 	"go-crawl/distributed/rpcsupport"
 	"log"
@@ -8,14 +10,18 @@ import (
 	"github.com/olivere/elastic"
 )
 
-func ServrRpc(host string, index string, serverNotifier chan struct{}) {
+func main() {
+	log.Fatal(ServrRpc(fmt.Sprintf(":%d", config.ItemSaverPort), config.ItemSaverESIndex))
+}
+
+func ServrRpc(host string, index string) error {
 	esClient, err := elastic.NewClient(elastic.SetSniff(false))
 	if err != nil {
-		panic(err)
+		return err
 	}
-	log.Fatal(rpcsupport.ServeRpc(host, &persist.ItemSaverService{
+	return rpcsupport.ServeRpc(host, &persist.ItemSaverService{
 		Client: esClient,
 		Index:  index,
-	}, serverNotifier))
+	})
 
 }
