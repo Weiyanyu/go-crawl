@@ -14,6 +14,8 @@ const (
 	ParseCityAndProfile = "ParseCityAndProfile"
 	ParseCityList       = "ParseCityList"
 	NilParser           = "NilParser"
+
+	ElasticSearchUrl = "http://elasticsearch-server:9200"
 )
 
 var (

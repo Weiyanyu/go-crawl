@@ -15,7 +15,8 @@ func main() {
 }
 
 func ServrRpc(host string, index string) error {
-	esClient, err := elastic.NewClient(elastic.SetSniff(false))
+
+	esClient, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(config.ElasticSearchUrl))
 	if err != nil {
 		return err
 	}

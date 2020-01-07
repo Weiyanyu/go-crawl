@@ -3,6 +3,7 @@ package persist
 import (
 	"context"
 	"errors"
+	"go-crawl/distributed/config"
 	"go-crawl/engine"
 	"log"
 
@@ -11,9 +12,7 @@ import (
 
 func ItemSaver(indexName string) (chan engine.Item, error) {
 
-	client, err := elastic.NewClient(
-		elastic.SetSniff(false),
-	)
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(config.ElasticSearchUrl))
 	if err != nil {
 		return nil, err
 	}
