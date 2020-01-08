@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"go-crawl/distributed/config"
 	"go-crawl/distributed/persist"
 	"go-crawl/distributed/rpcsupport"
 	"log"
-
+	"fmt"
 	"github.com/olivere/elastic"
 )
 
