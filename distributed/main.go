@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-crawl/distributed/config"
 	"go-crawl/distributed/persist/client"
 	"go-crawl/distributed/rpcsupport"
 	workerclient "go-crawl/distributed/worker/client"
@@ -9,11 +10,12 @@ import (
 	"go-crawl/scheduler"
 	"go-crawl/zhenai/parser"
 	"log"
-	"go-crawl/distributed/config"
+
 	"net/rpc"
 )
 
 func main() {
+
 
 	itemChannel, err := client.ItemSaver(fmt.Sprintf("%s:%d", config.ItemSaverHost, config.ItemSaverPort), "dating_profile")
 	if err != nil {

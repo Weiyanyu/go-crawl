@@ -12,6 +12,7 @@ import (
 
 func ItemSaver(indexName string) (chan engine.Item, error) {
 
+
 	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(config.ElasticSearchUrl))
 	if err != nil {
 		return nil, err
@@ -36,9 +37,6 @@ func ItemSaver(indexName string) (chan engine.Item, error) {
 
 func Save(client *elastic.Client, indexName string, item engine.Item) (err error) {
 
-	if err != nil {
-		return err
-	}
 	if item.Type == "" {
 		return errors.New("must supply Type")
 	}
